@@ -1,0 +1,32 @@
+<html>
+  <body>
+    <h1>Multiplikation Test</h1>
+    <form method ='post'>
+      {% csrf_token %}
+      
+      {{ form.name.label }} {{ form.name }} </br>
+      {{ form.date.label }} {{ form.date }} </br>
+      {{ form.time.label }} {{ form.time }} </br>
+      </br>
+
+      <table border="1">
+	<tr>
+	{% for field in form %}
+<!--	{% if forloop.counter <= 3 %}
+				 {{ forloop.counter3 }}
+	{% else %}
+-->
+	<td>{{ field.label }}={{ field }}</td>
+	  {% if forloop.counter|divisibleby:"3" %}
+	   </tr><tr>
+	{% endif %}
+	{% endif %}
+	{% endfor %}
+	</tr>
+      </table>
+      </br>
+      <input type="submit" value = "Submit">
+    </form>
+  </body>
+</html>
+
