@@ -2,7 +2,27 @@ import sys,time,datetime
 from django.shortcuts import render,HttpResponse,HttpResponseRedirect,Http404
  
 from .models import Student,Multi
-from .forms import MuForm,ResForm
+from .forms import MuForm, ResForm,StudForm
+
+def StudIn(request):
+    fields = Student.objects.all()
+    if (request.method == 'POST'):
+        studform = StudForm(request.POST)
+        if (studform.is_valid()):
+            studform.save()
+            
+            return HttpResponseRedirect('/mu/test/')
+        else:
+            return HttpResponse('Form unvalid {}'.format(studform))
+
+            
+    elif (request.method == 'GET'):
+        form = StudForm()
+        context = {
+            'form':form,
+
+        }
+        return render(request, 'StudForm.html',context)
 
 def MuTest(request):
 
@@ -14,7 +34,7 @@ def MuTest(request):
         if muform.is_valid():
             muform.save()
             
-            return HttpResponseRedirect('/mu/results')
+            return HttpResponseRedirect('/mu/results/')
         else:
             return HttpResponse('Form unvalid {}'.format(muform))
          
@@ -65,7 +85,7 @@ def ResView(request):
     tm = time.localtime()
     timeT = time.strftime('%H:%M:%S',tm)
     dateT = time.strftime('20%y-%m-%d',tm)
-    Student.objects.create(name='Philippe',date=dateT,time='{},'.format(timeT),result='{},'.format(cor))
+    Student.objects.create(name='Philippe',date=dateT,start='{},'.format(timeT),result='{},'.format(cor))
 
  
         

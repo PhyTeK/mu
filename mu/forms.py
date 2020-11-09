@@ -30,28 +30,26 @@ class MuForm(forms.ModelForm):
 
             
 
-        print(labels)
-            
-
-
         
-class StudForm(forms.Form):
+class StudForm(forms.ModelForm):
     tid = time.localtime()
     name = forms.CharField(label_suffix='',required=True)
-    time = forms.CharField(disabled=True,required=False,label_suffix='', initial='{}:{}'.format(tid.tm_hour+1,tid.tm_min))
+    klass = forms.CharField(label_suffix='',required=True)
+    start = forms.CharField(disabled=True,required=False,label_suffix='', initial='{}:{}'.format(tid.tm_hour+1,tid.tm_min))
     date = forms.DateField(initial=datetime.date.today,label_suffix='',disabled=True,required=False)
 
-    studid = forms.IntegerField(label_suffix='',required=False)
-    studid.widget.attrs.update(disabled=True,required=False)
+    #studid = forms.IntegerField(label_suffix='',required=False)
+    #studid.widget.attrs.update(disabled=True,required=False)
 
     class Meta:
         model = Student
-        fields = ['name','date','time']
+        fields = ['name','klass','date','start']
 
 
         help_texts = {
             'name' : 'Skriv ditt namn här.',
-            'time' : None,
+            'klass' : 'Skriv din klass här.',
+            'start' : None,
             'date' : None
          }
 

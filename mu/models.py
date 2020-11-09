@@ -60,10 +60,12 @@ class Multi(models.Model):
 class Student(models.Model):
 
     name = models.CharField(max_length = 80)
+    klass = models.CharField(max_length = 80)
     date = models.DateField(null=True)
-    time = models.CharField(null=True,max_length=10)
+    start = models.CharField(null=True,max_length=10)
+    end = models.CharField(null=True,max_length=10)
     result = models.CharField(max_length = 80,blank=True, null=True)
-    studid = models.IntegerField(blank=True, null=True);
+    studid = models.IntegerField(blank=True,primary_key=True);
     
     
     class Meta:
