@@ -1,6 +1,13 @@
 <html>
   <body>
     <h1>120-Multiplikationen Test</h1>
+    <h2>{{ std.name }}  {{ std.klass }} </h2>
+    <h3>{{ std.name }}</h3>
+    {% for stud in std %}
+    <p>Namn: {{ stud.name }}</p>
+    <p>Klass: {{ stud.klass }}</p>
+    {% endfor %}
+
     <form method ='post'>
       {% csrf_token %}
       <table border="1">

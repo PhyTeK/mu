@@ -3,6 +3,7 @@ import time,datetime
 from .models import Student,Multi
 
 class MuForm(forms.ModelForm):
+
     
     i=0;
     for f in Multi.test_120:

@@ -10,8 +10,9 @@ def StudIn(request):
         studform = StudForm(request.POST)
         if (studform.is_valid()):
             studform.save()
-            
-            return HttpResponseRedirect('/mu/test/')
+            print(studform)
+            # find the corresponding studid from name
+            return HttpResponseRedirect('/mu/test/',{'stdid':studform})
         else:
             return HttpResponse('Form unvalid {}'.format(studform))
 
@@ -27,14 +28,17 @@ def StudIn(request):
 def MuTest(request):
 
     fields = Multi.objects.all()
-    
+    studs = Student.objects.all()
+    print(studs)
+    std = studs.filter(studid=4) # Get studid from StudIn 
+
     if request.method == 'POST':
         muform = MuForm(request.POST)
         #print('muform:',muform)
         if muform.is_valid():
             muform.save()
             
-            return HttpResponseRedirect('/mu/results/')
+            return HttpResponseRedirect('/mu/results/',{'muform':muform,'std':std})
         else:
             return HttpResponse('Form unvalid {}'.format(muform))
          
@@ -42,6 +46,7 @@ def MuTest(request):
         form = MuForm()
         context ={
             'form':form,
+            'std':std
         }
         return render(request, 'MuForm.html', context)
 
