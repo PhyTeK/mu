@@ -39,7 +39,7 @@ class Multi(models.Model):
         pass
 
         def __str__(self):
-            return f"{self.test_120}"
+            return self.test_120
 
 
     
@@ -72,7 +72,7 @@ class Student(models.Model):
         ordering = ['name']
 
         def __str__(self):
-            return f"{self.name} : {self.date}"
+            return self.name
 
         
 
@@ -82,3 +82,5 @@ class Test(models.Model):
     M3 = models.IntegerField()
     M4 = models.IntegerField()
     
+    def __str__(self):
+        return self.name

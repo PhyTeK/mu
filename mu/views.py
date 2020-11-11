@@ -9,10 +9,14 @@ def StudIn(request):
     if (request.method == 'POST'):
         studform = StudForm(request.POST)
         if (studform.is_valid()):
+            name = studform['name'].value()
+            stud = Student.objects.get(pk=3)
+            print('****{}\n'.format(name))
+            
             studform.save()
-            print(studform)
+            #print(studform)
             # find the corresponding studid from name
-            return HttpResponseRedirect('/mu/test/',{'stdid':studform})
+            return HttpResponseRedirect('/mu/test/',{'stud':stud})
         else:
             return HttpResponse('Form unvalid {}'.format(studform))
 
@@ -21,7 +25,6 @@ def StudIn(request):
         form = StudForm()
         context = {
             'form':form,
-
         }
         return render(request, 'StudForm.html',context)
 
@@ -29,8 +32,8 @@ def MuTest(request):
 
     fields = Multi.objects.all()
     studs = Student.objects.all()
-    print(studs)
-    std = studs.filter(studid=4) # Get studid from StudIn 
+
+    std = studs.filter(pk=3) # Get studid from StudIn 
 
     if request.method == 'POST':
         muform = MuForm(request.POST)
@@ -38,7 +41,7 @@ def MuTest(request):
         if muform.is_valid():
             muform.save()
             
-            return HttpResponseRedirect('/mu/results/',{'muform':muform,'std':std})
+            return HttpResponseRedirect('/mu/results/',{'form':muform,'std':std})
         else:
             return HttpResponse('Form unvalid {}'.format(muform))
          
@@ -79,8 +82,6 @@ def ResView(request):
             if (int(studres) == int(mu[0])*int(mu[1])):
                 print("{}x{}={}".format(mu[0],mu[1],studres))
                 cor += 1
-            
-
 
     #var = '<li> {} -> {} {}</li><br>'.format(m,mu[0],mu[1])
     var = '<p>correct answers={}</p>'.format(cor)

@@ -59,6 +59,9 @@ class ResForm(forms.ModelForm):
     name = forms.CharField(label_suffix='',required=False)
     time = forms.CharField(disabled=True,required=False,label_suffix='', initial='{}:{}'.format(tid.tm_hour+1,tid.tm_min))
     date = forms.DateField(initial=datetime.date.today,label_suffix='',disabled=True,required=False)
-
     
+    class Meta:
+        model = Student
+        fields = ['name','klass','result']
     
+        
