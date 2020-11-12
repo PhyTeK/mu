@@ -4,19 +4,39 @@ from django.shortcuts import render,HttpResponse,HttpResponseRedirect,Http404
 from .models import Student,Multi
 from .forms import MuForm, ResForm,StudForm
 
+def findstudid(name):
+    stud = Student.objects.filter(name__startswith=name)
+    if(stud != None):
+        for s in stud:            
+            studid = s.studid
+            
+        return studid
+    else:
+        return None
+
+
 def StudIn(request):
     fields = Student.objects.all()
+    
     if (request.method == 'POST'):
         studform = StudForm(request.POST)
         if (studform.is_valid()):
-            name = studform['name'].value()
-            stud = Student.objects.get(pk=3)
-            print('****{}\n'.format(name))
-            
+            name = studform.cleaned_data['name']
             studform.save()
-            #print(studform)
-            # find the corresponding studid from name
-            return HttpResponseRedirect('/mu/test/',{'stud':stud})
+            # Find the name in db and return the corresponing studid
+            print('*** Name:',name)
+            studid=findstudid(name)
+            print('*** StudIn studid: {}\n'.format(studid))
+            
+
+            
+            context={
+                'studid':studid,
+                'name':name
+            }
+
+
+            return HttpResponseRedirect('/mu/test/',context)
         else:
             return HttpResponse('Form unvalid {}'.format(studform))
 
@@ -32,8 +52,14 @@ def MuTest(request):
 
     fields = Multi.objects.all()
     studs = Student.objects.all()
-
-    std = studs.filter(pk=3) # Get studid from StudIn 
+    name=studs.filter(name__startswith="Tat")
+    studid = findstudid(name)
+    print('*** MuTest studid:',studid)
+    std = studs.filter(pk=studid) # Get studid from StudIn
+    for s in std:
+        
+        name = s.name
+        klass = s.klass
 
     if request.method == 'POST':
         muform = MuForm(request.POST)
@@ -41,7 +67,7 @@ def MuTest(request):
         if muform.is_valid():
             muform.save()
             
-            return HttpResponseRedirect('/mu/results/',{'form':muform,'std':std})
+            return HttpResponseRedirect('/mu/results/',{'form':muform,'std':std,'studid':studid})
         else:
             return HttpResponse('Form unvalid {}'.format(muform))
          
@@ -49,7 +75,10 @@ def MuTest(request):
         form = MuForm()
         context ={
             'form':form,
-            'std':std
+            'std':std,
+            'name': name,
+            'klass':klass,
+            'studid':studid
         }
         return render(request, 'MuForm.html', context)
 
