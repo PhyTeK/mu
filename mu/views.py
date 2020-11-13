@@ -4,12 +4,14 @@ from django.shortcuts import render,HttpResponse,HttpResponseRedirect,Http404
 from .models import Student,Multi
 from .forms import MuForm, ResForm,StudForm
 
+
 def findstudid(name):
-    stud = Student.objects.filter(name__startswith=name)
+    stud = Student.objects.filter(name=name)[0]
+
     if(stud != None):
-        for s in stud:            
-            studid = s.studid
-            
+        studid = stud.studid
+
+        print('Name: {}, Studid: {}\n'.format(name,studid))
         return studid
     else:
         return None
@@ -22,21 +24,25 @@ def StudIn(request):
         studform = StudForm(request.POST)
         if (studform.is_valid()):
             name = studform.cleaned_data['name']
-            studform.save()
+            #studform.save()
             # Find the name in db and return the corresponing studid
-            print('*** Name:',name)
             studid=findstudid(name)
-            print('*** StudIn studid: {}\n'.format(studid))
-            
+            if studid == None:
+                print("Name does not exist!!\n")
+                return render(request, 'StudForm.html',context)
+            else:
+                context={
+                    'studid':studid,
+                    'name':name
+                }
 
-            
-            context={
-                'studid':studid,
-                'name':name
-            }
+
+                response = HttpResponseRedirect('/mu/test/',context)
+                response.set_cookie('studid',studid)
 
 
-            return HttpResponseRedirect('/mu/test/',context)
+
+                return response
         else:
             return HttpResponse('Form unvalid {}'.format(studform))
 
@@ -51,23 +57,20 @@ def StudIn(request):
 def MuTest(request):
 
     fields = Multi.objects.all()
-    studs = Student.objects.all()
-    name=studs.filter(name__startswith="Tat")
-    studid = findstudid(name)
-    print('*** MuTest studid:',studid)
-    std = studs.filter(pk=studid) # Get studid from StudIn
-    for s in std:
-        
-        name = s.name
-        klass = s.klass
+    studid = request.COOKIES['studid']
+    stud = Student.objects.filter(pk=studid)[0]
 
+    name = stud.name
+    klass = stud.klass
+
+    print('Name: {}, Klass: {}, studid: {}\n'.format(name,klass,studid))
     if request.method == 'POST':
         muform = MuForm(request.POST)
         #print('muform:',muform)
         if muform.is_valid():
             muform.save()
             
-            return HttpResponseRedirect('/mu/results/',{'form':muform,'std':std,'studid':studid})
+            return HttpResponseRedirect('/mu/results/',{'form':muform,'stud':stud,'studid':studid})
         else:
             return HttpResponse('Form unvalid {}'.format(muform))
          
@@ -75,7 +78,7 @@ def MuTest(request):
         form = MuForm()
         context ={
             'form':form,
-            'std':std,
+            'stud':stud,
             'name': name,
             'klass':klass,
             'studid':studid
