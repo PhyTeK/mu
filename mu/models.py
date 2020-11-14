@@ -61,7 +61,7 @@ class Student(models.Model):
 
     name = models.CharField(max_length = 80)
     klass = models.CharField(max_length = 80)
-    date = models.DateField(null=True)
+    week = models.CharField(max_length = 200)
     start = models.CharField(null=True,max_length=10)
     end = models.CharField(null=True,max_length=10)
     result = models.CharField(max_length = 80,blank=True, null=True)
