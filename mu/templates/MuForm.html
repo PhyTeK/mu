@@ -1,11 +1,7 @@
 <html>
   <body>
-    <h1>120-Multiplikationen Test</h1>
+    <h2>120-Multiplikationen Test</h2>
     <h2>Namn: {{ name }}, Klass: {{ klass }} </h2>
-    <h3>Studid: {{ studid }}</h3>
-    <p>Namn: {{ stud.name }}</p>
-    <p>Klass: {{ stud.klass }}</p>
-
 
     <form method ='post'>
       {% csrf_token %}
@@ -20,7 +16,9 @@
 	</tr>
       </table>
       </br>
-      <input type="submit" value = "Submit">
+	  <center>
+	    <input type="submit" value = "Klar">
+	  </center>
     </form>
   </body>
 </html>

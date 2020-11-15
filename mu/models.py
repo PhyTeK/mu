@@ -60,11 +60,11 @@ class Multi(models.Model):
 class Student(models.Model):
 
     name = models.CharField(max_length = 80)
-    klass = models.CharField(max_length = 80)
+    klass = models.CharField(max_length = 8)
     week = models.CharField(max_length = 200)
     start = models.CharField(null=True,max_length=10)
     end = models.CharField(null=True,max_length=10)
-    result = models.CharField(max_length = 80,blank=True, null=True)
+    result = models.CharField(max_length = 200,blank=True, null=True)
     studid = models.IntegerField(blank=True,primary_key=True);
     
     

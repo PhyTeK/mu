@@ -6,10 +6,10 @@ from .forms import MuForm, ResForm,StudForm
 
 
 def findstudid(name):
-    stud = Student.objects.filter(name=name)[0]
-
-    if(stud != None):
-        studid = stud.studid
+    stud = Student.objects.filter(name=name)
+    print(stud.count())
+    if(stud.count() > 0):
+        studid = stud[0].studid
 
         print('Name: {}, Studid: {}\n'.format(name,studid))
         return studid
@@ -24,12 +24,17 @@ def StudIn(request):
         studform = StudForm(request.POST)
         if (studform.is_valid()):
             name = studform.cleaned_data['name']
+            klass = studform.cleaned_data['klass']
+
+
             #studform.save()
             # Find the name in db and return the corresponing studid
             studid=findstudid(name)
             if studid == None:
                 print("Name does not exist!!\n")
-                return render(request, 'StudForm.html',context)
+                studform.save()
+
+                return render(request, 'StudForm.html')
             else:
                 context={
                     'studid':studid,
@@ -60,14 +65,15 @@ def MuTest(request):
 
     name = stud[0].name
     klass = stud[0].klass
-
+    week = stud[0].week
+    
     print('Name: {}, Klass: {}, studid: {}\n'.format(name,klass,studid))
     if request.method == 'POST':
         muform = MuForm(request.POST)
         #print('muform:',muform)
         if muform.is_valid():
             muform.save()
-            
+            muform = MuForm() # Clear form to avoid student corrections
             return HttpResponseRedirect('/mu/results/',{'form':muform,'stud':stud,'studid':studid})
         else:
             return HttpResponse('Form unvalid {}'.format(muform))
@@ -76,14 +82,16 @@ def MuTest(request):
         form = MuForm()
 
         # Start timer
+        time.tzset()
         tm = time.localtime()
+
         timeT = time.strftime('%H:%M:%S',tm)
         dateT = time.strftime('20%y-%m-%d',tm)
         a = datetime.datetime.now().replace(microsecond=0)
-        
+        print(a)
         # Update start time of the student
 
-        stud.update(start=a,date=dateT)
+        stud.update(start=a,week=week)
                                
         context ={
             'form':form,
@@ -154,17 +162,19 @@ def ResView(request):
         newresult = '{}'.format(cor)
 
     stud.update(result=newresult)
-    
+    time.tzset()
     tm = time.localtime()
     timeT = time.strftime('%H:%M:%S',tm)
     dateT = time.strftime('20%y-%m-%d',tm)
     b = datetime.datetime.now().replace(microsecond=0)
 
+    # Week number
     a = datetime.datetime.strptime(stud[0].start, '%Y-%m-%d %H:%M:%S')
     print(a)
     print(b-a)
     oldate = stud[0].week
-    if(oldate != None):
+    print(oldate)
+    if(oldate != ''):
         newdate = oldate + ',{}'.format(b.isocalendar()[1])
     else:
         newdate = '{}'.format(b.isocalendar()[1])
