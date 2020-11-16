@@ -60,6 +60,7 @@ class Multi(models.Model):
 class Student(models.Model):
 
     name = models.CharField(max_length = 80)
+    #password = models.CharField(max_length=200)
     klass = models.CharField(max_length = 8)
     week = models.CharField(max_length = 200)
     start = models.CharField(null=True,max_length=10)

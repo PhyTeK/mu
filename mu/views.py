@@ -1,9 +1,11 @@
 import sys,time,datetime
 from django.shortcuts import render,HttpResponse,HttpResponseRedirect,Http404
- 
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from .models import Student,Multi
 from .forms import MuForm, ResForm,StudForm
-
+from django.conf import settings
+from .encrypt import encrypt,decrypt
 
 def findstudid(name):
     stud = Student.objects.filter(name=name)
@@ -18,6 +20,12 @@ def findstudid(name):
 
 
 def StudIn(request):
+    #u = User.objects.create_user('Philippe','','secret')
+    #u.save()
+
+    ec=encrypt('abc123')
+    dc=decrypt(ec)
+    print(ec,dc)
     fields = Student.objects.all()
     
     if (request.method == 'POST'):
@@ -25,14 +33,25 @@ def StudIn(request):
         if (studform.is_valid()):
             name = studform.cleaned_data['name']
             klass = studform.cleaned_data['klass']
+            password = studform.cleaned_data['password']
+            studid = findstudid(name)
 
+            
+            if(studid is None):  # Warning anyone can create a password!!
+                user = User.objects.create_user(username=name,email=None,password=password)
+                #user.set_password(password)
+                user.save()
+                studform.save()
 
+            user = User.objects.get(username=name)
+            spass = authenticate(username=name,password=password)
+            print('spass:',spass)
             #studform.save()
             # Find the name in db and return the corresponing studid
-            studid=findstudid(name)
-            if studid == None:
-                print("Name does not exist!!\n")
-                studform.save()
+
+            if(studid is None or spass is None):
+                return HttpResponse("Name/password not valid!!\n")
+                #studform.save()
 
                 return render(request, 'StudForm.html')
             else:
