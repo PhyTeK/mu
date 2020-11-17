@@ -3,13 +3,25 @@ from django.shortcuts import render,HttpResponse,HttpResponseRedirect,Http404
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from .models import Student,Multi
-from .forms import MuForm, ResForm,StudForm
+from .forms import MuForm,ResForm,StudForm,StartForm
 from django.conf import settings
 from .encrypt import encrypt,decrypt
 
-def findstudid(name):
-    stud = Student.objects.filter(name=name)
-    print(stud.count())
+def findstudid(name,klass):
+    print(klass.lower())
+    
+    stud1 = Student.objects.filter(name=name,klass=klass.upper())
+    stud2 = Student.objects.filter(name=name,klass=klass.lower())
+
+    
+    #print('Number of students:', stud1.count())
+    #print('Number of students:', stud2.count())
+
+    if(stud1.count() == 1):
+        stud=stud1
+    else:
+        stud=stud2
+
     if(stud.count() > 0):
         studid = stud[0].studid
 
@@ -18,14 +30,43 @@ def findstudid(name):
     else:
         return None
 
+def StartView(request):
 
+    if (request.method == 'POST'):
+        startform = StartForm(request.POST)
+        if (startform.is_valid()):
+            name = startform.cleaned_data['name']
+            password = startform.cleaned_data['password']
+
+            #user = User.objects.get(username=name)
+            spass = authenticate(username=name,password=password)
+
+            if spass is None:
+                #return ender(request, 'StartForm.html')
+                return HttpResponse('Username/password unvalid')
+            else:
+                context={
+                    'name':name,
+                    'password':password
+                }
+
+                return HttpResponseRedirect('/mu/student/',context)
+
+        else:
+            return HttpResponse('Form unvalid {}'.format(startform))
+
+    elif (request.method == 'GET'):
+        form = StartForm()
+        context = {
+            'form':form,
+        }
+        return render(request, 'login.html',context)
+
+
+
+    
 def StudIn(request):
-    #u = User.objects.create_user('Philippe','','secret')
-    #u.save()
 
-    ec=encrypt('abc123')
-    dc=decrypt(ec)
-    print(ec,dc)
     fields = Student.objects.all()
     
     if (request.method == 'POST'):
@@ -33,24 +74,16 @@ def StudIn(request):
         if (studform.is_valid()):
             name = studform.cleaned_data['name']
             klass = studform.cleaned_data['klass']
-            password = studform.cleaned_data['password']
-            studid = findstudid(name)
+            #password = studform.cleaned_data['password']
+            studid = findstudid(name,klass)
 
             
-            if(studid is None):  # Warning anyone can create a password!!
-                user = User.objects.create_user(username=name,email=None,password=password)
-                #user.set_password(password)
-                user.save()
-                studform.save()
-
-            user = User.objects.get(username=name)
-            spass = authenticate(username=name,password=password)
-            print('spass:',spass)
+            #print('spass:',spass)
             #studform.save()
             # Find the name in db and return the corresponing studid
 
-            if(studid is None or spass is None):
-                return HttpResponse("Name/password not valid!!\n")
+            if(studid is None):
+                return HttpResponse('Felt namn eller fel klass. Prova igen!')
                 #studform.save()
 
                 return render(request, 'StudForm.html')
@@ -157,6 +190,7 @@ def ResView(request):
     html = ''
 
     cor = 0
+    fel = 0
     lastid= res.count()
     lastval = Multi.objects.filter(id=lastid)
     #print('lastval', lastval.values('1: 6x6')[0]['1: 6x6'])
@@ -168,6 +202,9 @@ def ResView(request):
             if (int(studres) == int(mu[0])*int(mu[1])):
                 print("{}: {}x{}={}".format(studid,mu[0],mu[1],studres))
                 cor += 1
+            else:
+                print("!!{}: {}x{}={}".format(studid,mu[0],mu[1],studres))
+                fel += 1
 
     #var = '<li> {} -> {} {}</li><br>'.format(m,mu[0],mu[1])
     var = '<p>Du hade {} korrekta svar.</p>'.format(cor)
@@ -193,7 +230,7 @@ def ResView(request):
     print(b-a)
     oldate = stud[0].week
     print(oldate)
-    if(oldate != ''):
+    if(oldate != None):
         newdate = oldate + ',{}'.format(b.isocalendar()[1])
     else:
         newdate = '{}'.format(b.isocalendar()[1])

@@ -3,7 +3,6 @@ from django.db import models
 
 class Multi(models.Model):
 
-
     test_120 = [
         [6,6],[8,4],[6,3],[2,2],[5,9],[7,5],
         [3,7],[9,9],[8,6],[6,7],[3,8],[9,4],
@@ -62,7 +61,7 @@ class Student(models.Model):
     name = models.CharField(max_length = 80)
     #password = models.CharField(max_length=200)
     klass = models.CharField(max_length = 8)
-    week = models.CharField(max_length = 200)
+    week = models.CharField(max_length = 200,null=True)
     start = models.CharField(null=True,max_length=10)
     end = models.CharField(null=True,max_length=10)
     result = models.CharField(max_length = 200,blank=True, null=True)

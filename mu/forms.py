@@ -2,6 +2,16 @@ from django import forms,utils
 import time,datetime
 from .models import Student,Multi
 
+class StartForm(forms.ModelForm):
+    name = forms.CharField(required=True,initial='',label='Namn')
+    password = forms.CharField(required=True,initial='',label='Paswd',widget=forms.PasswordInput)
+
+    class Meta:
+        model = Student
+        fields = ['name','password']
+    
+
+
 class MuForm(forms.ModelForm):
 
     i=0;
@@ -33,8 +43,8 @@ class MuForm(forms.ModelForm):
         
 class StudForm(forms.ModelForm):
     tid = time.localtime()
-    password = forms.CharField(label='Lösenord',max_length=32, widget=forms.PasswordInput)
-    print(password)
+    #password = forms.CharField(label='Lösenord',max_length=32, widget=forms.PasswordInput)
+    #print(password)
     name = forms.CharField(label='Ditt namn',initial='',required=True)
     klass = forms.CharField(label='Din klass    ',label_suffix=': ',max_length=4,required=True)
     #start = forms.CharField(disabled=True,required=False,label_suffix='', initial='{}:{}'.format(tid.tm_hour+1,tid.tm_min))
@@ -45,13 +55,12 @@ class StudForm(forms.ModelForm):
 
     class Meta:
         model = Student
-        fields = ['name','klass','password']
-
+        fields = ['name','klass']
+    
 
         help_text = {
             'name' : 'Skriv ditt namn här!',
             'klass' : 'Skriv din klass här!',
-            'password' : 'Skriv ditt lösenord här!',
          }
 
 class ResForm(forms.ModelForm):
