@@ -1,8 +1,20 @@
 from django.db import models
+#from countdowntimer_model.models import CountdownTimer
 
+#class Time(models.Model,CountdownTimer):
+#    pass
+#    duration_in_minutes = models.CharField(max_length = 200,null=True)
+#    state = models.IntegerField(blank=True,primary_key=True);
 
 class Multi(models.Model):
-
+    #timer = Time.objects.create(
+    #duration_in_minutes=5,
+    #state=Time.STATE.RUNNING,
+    #)
+    
+    #remtid = timer.remaining_time_in_minutes()
+    #print(remtid)
+    
     test_120 = [
         [6,6],[8,4],[6,3],[2,2],[5,9],[7,5],
         [3,7],[9,9],[8,6],[6,7],[3,8],[9,4],
@@ -35,7 +47,6 @@ class Multi(models.Model):
         del locals()['label']
 
     class Meta:
-        pass
 
         def __str__(self):
             return self.test_120
@@ -82,5 +93,7 @@ class Test(models.Model):
     M3 = models.IntegerField()
     M4 = models.IntegerField()
     
-    def __str__(self):
-        return self.name
+    class Meta:
+
+        def __str__(self):
+            return self.M1

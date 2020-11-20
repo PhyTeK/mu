@@ -10,6 +10,15 @@ class StartForm(forms.ModelForm):
         model = Student
         fields = ['name','password']
     
+class TeachForm(forms.ModelForm):
+    name = forms.CharField(required=True,initial='',label='')
+    password = forms.CharField(required=True,initial='',label='',widget=forms.PasswordInput)
+
+    class Meta:
+        model = Student
+        fields = ['name','password']
+
+
 
 
 class MuForm(forms.ModelForm):

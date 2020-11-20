@@ -23,5 +23,7 @@ urlpatterns = [
     path('mu/start/',StartView, name='StartView'),
     path('mu/test/',MuTest, name='MuTest'),
     path('mu/results/',ResView, name='ResView'),
+    path('mu/teacher/',TeachView, name='TeachView'),
+    path('accounts/login/',LoginRequiredView, name='login'),
     path('admin/', admin.site.urls),
 ]

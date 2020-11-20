@@ -3,9 +3,15 @@ from django.shortcuts import render,HttpResponse,HttpResponseRedirect,Http404
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from .models import Student,Multi
-from .forms import MuForm,ResForm,StudForm,StartForm
+from .forms import MuForm,ResForm,StudForm,StartForm,TeachForm
 from django.conf import settings
 from .encrypt import encrypt,decrypt
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+def LoginRequiredView(LoginRequiredMixin):
+
+    return HttpResponseRedirect('/admin/login/?next=/admin/')
 
 def findstudid(name,klass):
     print(klass.lower())
@@ -29,6 +35,31 @@ def findstudid(name,klass):
         return studid
     else:
         return None
+
+@login_required
+def TeachView(request):
+    studs = Student.objects.all()
+    teachform = TeachForm(request.POST)
+    if (request.method == 'POST'):
+        if (teachform.is_valid()):
+            context={
+            'studs':studs
+            }
+            
+            return HttpResponseRedirect('/mu/teacher/',context)
+        else:
+            return HttpResponse('Form unvalid!')
+
+    elif (request.method == 'GET'):
+        form = TeachForm()
+        context = {
+            'form':form,
+            'studs':studs
+        }
+        return render(request, 'teacher.html',context)
+
+    
+
 
 def StartView(request):
 
@@ -191,6 +222,7 @@ def ResView(request):
 
     cor = 0
     fel = 0
+    allafel = ''
     lastid= res.count()
     lastval = Multi.objects.filter(id=lastid)
     #print('lastval', lastval.values('1: 6x6')[0]['1: 6x6'])
@@ -205,17 +237,21 @@ def ResView(request):
             else:
                 print("!!{}: {}x{}={}".format(studid,mu[0],mu[1],studres))
                 fel += 1
+                allafel += '{}x{}≠{}'.format(mu[0],mu[1],studres) + '</br>'
 
     #var = '<li> {} -> {} {}</li><br>'.format(m,mu[0],mu[1])
-    var = '<p>Du hade {} korrekta svar.</p>'.format(cor)
+    var = '<p>Du hade, {} korrekta svar och {} fel.</p>'.format(cor,fel)
     html = html + var
 
+    html = html +'</br>' + allafel
+
+    
     # Update student results
     oldres = stud[0].result
     if (oldres != None):
-        newresult = oldres + ',{}'.format(cor)
+        newresult = oldres + ',({},{})'.format(cor,fel)
     else:
-        newresult = '{}'.format(cor)
+        newresult = '({},{})'.format(cor,fel)
 
     stud.update(result=newresult)
     time.tzset()
