@@ -1,1 +1,1 @@
-web: gunicorn mu120tab.wsgi
+web: gunicorn mu.wsgi
