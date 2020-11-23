@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
+import django_heroku
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -121,7 +121,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 ENCRYPT_KEY = b'nLSOyfzWTyEPvkkkKIK5n1jXc2N1IwkV0RvfMTXWbC0='
 # Configure Django App for Heroku.
-import django_heroku
+
 django_heroku.settings(locals())
 
 

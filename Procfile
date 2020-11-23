@@ -1,0 +1,1 @@
+web: gunicorn mu120tab.wsgi
