@@ -3,8 +3,8 @@ import time,datetime
 from .models import Student,Multi
 
 class StartForm(forms.ModelForm):
-    name = forms.CharField(required=True,initial='',label='Namn')
-    password = forms.CharField(required=True,initial='',label='Paswd',widget=forms.PasswordInput)
+    name = forms.CharField(required=True,initial='',label='')
+    password = forms.CharField(required=True,initial='',label='',widget=forms.PasswordInput)
 
     class Meta:
         model = Student

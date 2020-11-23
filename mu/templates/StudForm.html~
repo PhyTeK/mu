@@ -1,0 +1,22 @@
+
+<html>
+  <body>
+    <h1>120-Multiplikationen Test</h1>
+    <form method ='post'>
+      {% csrf_token %}
+      <table border="1">
+	<tr>
+	{% for field in form %}
+	<td>{{ field.label }}={{ field }}</td>
+	  {% if forloop.counter|divisibleby:"4" %}
+	   </tr><tr>
+	{% endif %}
+	{% endfor %}
+	</tr>
+      </table>
+      </br>
+      <input type="submit" value = "Submit">
+    </form>
+  </body>
+</html>
+

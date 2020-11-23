@@ -1,0 +1,22 @@
+<html>
+  <body>
+    {% include "login.html" %}
+    <p>Id:{{ id }}</p>
+    <form method ='post'>
+      {% csrf_token %}
+
+      <table border="1">
+
+	  {% for stud in studs %}
+	  <tr>	  
+	  {% for field in stud %}
+	  <td>{{ field }}</td>
+	  
+	  {% endfor %}
+	  </tr>
+	  {% endfor %}
+
+      </table>
+    </form>
+  </body>
+</html>

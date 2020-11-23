@@ -13,9 +13,9 @@
     <div class="content">
     <form method="post">
       {% csrf_token %}
-      {{ form.as_p }}
       <center>
-	<input type="submit" name="login" value="Login">
+      {{ form.as_p }}
+      <input type="submit" name="login" value="Login">
       </center>
     </form>
     </div>

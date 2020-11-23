@@ -1,0 +1,33 @@
+;; This buffer is for text that is not saved, and for Lisp evaluation.
+;; To create a file, visit it with C-x C-f and enter text in its buffer.
+
+<!--
+{{form.as_table}}
+
+<table border="1">
+{% for element in data %}
+    <tr>
+    <td><p>column 1 </p></td>
+    <td><p>column 2 </p></td>
+    <td><p>column 3 </p></td>
+    <td><p>column 4 </p></td>
+    <td><p>column 5 </p></td>
+    </tr>
+{% endfor %}
+</tr>
+</table>
+
+-->
+
+
+
+
+
+
+	{% for field in form %}
+        <tr>
+            <td>{{ field.label}}{{ field }}</td>
+            <td>{{ field.label}}{{ field }}</td>
+        </tr>
+	{% endfor %}
+	

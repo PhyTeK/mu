@@ -1,0 +1,83 @@
+import sys
+from django.shortcuts import render,HttpResponse,HttpResponseRedirect,Http404
+ 
+from .models import Student,Multi
+from .forms import MuForm,ResForm
+
+def MuTest(request):
+    fields = Multi.objects.all()
+    
+    if request.method == 'POST':
+        muform = MuForm(request.POST)
+        #print('muform:',muform)
+        if muform.is_valid():
+            muform.save()
+            
+            return HttpResponseRedirect('/mu/results')
+        else:
+            return HttpResponse('Form unvalid {}'.format(muform))
+         
+    else:
+        form = MuForm()
+        context ={
+            'form':form,
+        }
+        return render(request, 'MuForm.html', context)
+
+def StudView(request):
+    mus = Student.objects.all()
+
+    html = ''
+    for mu in mus:
+        var = f'<li> Name: {mu.name}, Date: {mu.date}, Time: {mu.time}</li><br>'
+        html = html + var
+    return HttpResponse(html,status = 200)
+
+
+def ResView(request):
+
+    res = Multi.objects.all()
+    print('res size:',sys.getsizeof(res))
+    print(Multi._meta.fields.get_attname('1: 6x6'))
+    print(Multi.objects.filter(id=3).values_list())
+    html = ''
+    i = 0
+    cor = 0
+    lastid= res.count()
+    print('count={}'.format(lastid))
+    print('col1: {}'.format(res.values('1: 6x6')))
+
+    lastval = res.values('1: 6x6')[lastid-1]
+    print('last: {}'.format(lastval['1: 6x6']))
+    for m in res:
+        mu = Multi.test_120[i]
+
+        muid = "{}: {}x{}".format(i+1,mu[0],mu[1])
+        lastval = res.values(muid)[lastid-1]
+        
+        if(lastval[muid] != None):
+            if (int(lastval[muid]) == int(mu[0])*int(mu[1])):
+                print("{}x{}={}".format(mu[0],mu[1],lastval[muid]))
+                cor += 1
+        else:
+            print("{}x{}={}".format(mu[0],mu[1],lastval[muid]))
+
+        i = i + 1        
+        print('i={}'.format(i))
+    #var = '<li> {} -> {} {}</li><br>'.format(m,mu[0],mu[1])
+    var = '<p>correct answers={}</p>'.format(cor)
+    html = html + var
+    
+        
+    return HttpResponse(html,status = 200)
+
+
+#            for label in labels:
+#                locals()[label] = form.cleaned_data[locals()[label]]                
+
+#  try:
+#      name = MuModel.objects.get( stud_name = 'Philippe')
+#  except:
+#      raise Http404('No results %s %d' % (stud_name,locals()[1]))
+
+# return HttpResponseRedirect(f'/results/', {'mu':mu})

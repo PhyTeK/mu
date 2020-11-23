@@ -14,8 +14,8 @@
     <div class="content">
 	<form method ='post'>
 	  {% csrf_token %}
-	  {{ form.as_p }}
 	  <center>
+	    {{ form.as_p }}
 	    <input type="submit" value="Skicka">
 	  </center>
 	</form>

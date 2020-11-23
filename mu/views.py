@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 def LoginRequiredView(LoginRequiredMixin):
-
+    
     return HttpResponseRedirect('/admin/login/?next=/admin/')
 
 def findstudid(name,klass):
@@ -74,6 +74,7 @@ def StartView(request):
 
             if spass is None:
                 #return ender(request, 'StartForm.html')
+                # New stuff
                 return HttpResponse('Username/password unvalid')
             else:
                 context={
@@ -97,7 +98,7 @@ def StartView(request):
 
     
 def StudIn(request):
-
+    # New stuff
     fields = Student.objects.all()
     
     if (request.method == 'POST'):
@@ -107,7 +108,6 @@ def StudIn(request):
             klass = studform.cleaned_data['klass']
             #password = studform.cleaned_data['password']
             studid = findstudid(name,klass)
-
             
             #print('spass:',spass)
             #studform.save()
