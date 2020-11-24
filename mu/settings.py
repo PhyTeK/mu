@@ -85,7 +85,9 @@ WSGI_APPLICATION = 'mu.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {}
-DATABASES['default']=dj_database_url.config(conn_max_age=600)
+db_from_env = dj_database_url.config()
+DATABASES['default'].update(db_from_env)
+#DATABASES['default']=dj_database_url.config(conn_max_age=600)
 
 # DATABASES={    'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
@@ -138,8 +140,6 @@ ENCRYPT_KEY = b'nLSOyfzWTyEPvkkkKIK5n1jXc2N1IwkV0RvfMTXWbC0='
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = '/static/'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (
@@ -150,3 +150,4 @@ django_heroku.settings(locals())
 
 options=DATABASES['default'].get('OPTIONS',{})
 options.pop('sslmode',None)
+STATIC_URL = '/static/'STATIC_ROOT = os.path.join(BASE_DIR, 'static')STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

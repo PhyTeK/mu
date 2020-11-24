@@ -1,1 +1,1 @@
-web: gunicorn mu.wsgi
+web: gunicorn mu120tab.wsgi —-log-file -
