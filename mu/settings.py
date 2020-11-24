@@ -36,7 +36,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['localhost','127.0.0.1','mu120tab.herokuapp.com/','77.53.56.197']
 
 SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = True
 CSRF_COOKIE_SECURE = True
 #CSRF_COOKIE_DOMAIN = None   # In development
 
