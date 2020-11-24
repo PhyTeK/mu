@@ -31,9 +31,9 @@ if os.path.isfile(dotenv_file):
 SECRET_KEY = 'f557wk)rd8_2i!yhgwmyu!ucu2k8=ce0!(df43233%+g_3((-)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['77.53.56.197']
+ALLOWED_HOSTS = ['localhost','127.0.0.1','mu120tab.herokuapp.com/','77.53.56.197']
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
