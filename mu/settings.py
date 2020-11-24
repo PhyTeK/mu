@@ -16,8 +16,8 @@ import dotenv
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-# BASE_DIR = Path(__file__).resolve().parent.parent
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
+#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 dotenv_file= os.path.join(BASE_DIR, '.env')
 
 if os.path.isfile(dotenv_file):
@@ -34,8 +34,11 @@ SECRET_KEY = 'f557wk)rd8_2i!yhgwmyu!ucu2k8=ce0!(df43233%+g_3((-)'
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost','127.0.0.1','mu120tab.herokuapp.com/','77.53.56.197']
+
 SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = True
+#CSRF_COOKIE_DOMAIN = None   # In development
 
 # Application definition
 
@@ -84,16 +87,15 @@ WSGI_APPLICATION = 'mu.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {}
-db_from_env = dj_database_url.config()
-DATABASES['default'].update(db_from_env)
+#DATABASES = {}
+#db_from_env = dj_database_url.config()
 #DATABASES['default']=dj_database_url.config(conn_max_age=600)
 
-# DATABASES={    'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+DATABASES={    'default': {
+         'ENGINE': 'django.db.backends.sqlite3',
+         'NAME': BASE_DIR / 'db.sqlite3',
+     }
+ }
 
 
 # Password validation
