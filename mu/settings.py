@@ -151,6 +151,8 @@ django_heroku.settings(locals())
 options=DATABASES['default'].get('OPTIONS',{})
 options.pop('sslmode',None)
 
-STATIC_URL = '/static/'STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
