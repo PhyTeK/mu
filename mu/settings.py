@@ -86,8 +86,8 @@ WSGI_APPLICATION = 'mu.wsgi.application'
 
 DATABASES = {}
 db_from_env = dj_database_url.config()
-DATABASES['default'].update(db_from_env)
-#DATABASES['default']=dj_database_url.config(conn_max_age=600)
+#DATABASES['default'].update(db_from_env)
+DATABASES['default']=dj_database_url.config(conn_max_age=600)
 
 # DATABASES={    'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
@@ -150,4 +150,7 @@ django_heroku.settings(locals())
 
 options=DATABASES['default'].get('OPTIONS',{})
 options.pop('sslmode',None)
-STATIC_URL = '/static/'STATIC_ROOT = os.path.join(BASE_DIR, 'static')STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+STATIC_URL = '/static/'STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
