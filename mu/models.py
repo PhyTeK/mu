@@ -9,6 +9,7 @@ from django.db import models
 class Multi(models.Model):
     #timer = Time.objects.create(
     #duration_in_minutes=5,
+
     #state=Time.STATE.RUNNING,
     #)
     
@@ -42,7 +43,6 @@ class Multi(models.Model):
         i = i + 1
         label = '{}: {}x{}'.format(i,m[0],m[1])
         locals()[label] = models.CharField(blank=True, null=True,max_length=4,default='')
-        #locals()[label] = models.PositiveSmallIntegerField(blank=True, null=True)
          
         del locals()['label']
 
@@ -51,49 +51,33 @@ class Multi(models.Model):
         def __str__(self):
             return self.test_120
 
-
-    
-# class Results(models.Model):
-#     results = []
-
-#     i=0
-#     for m in Multi.test_120:
-#         i = i + 1
-#         #label = 'M{}'.format(i)
-#         label = '{}: {}x{}'.format(i,m[0],m[1])
-#         locals()[label] = models.IntegerField(blank=True, null=True)
-#         #locals()[label] = models.PositiveSmallIntegerField(blank=True, null=True)
-         
-#         del locals()['label']
     
 
-class Student(models.Model):
-
-    name = models.CharField(max_length = 80)
-    #password = models.CharField(max_length=200)
-    klass = models.CharField(max_length = 8)
-    week = models.CharField(max_length = 200,null=True)
-    start = models.CharField(null=True,max_length=10)
-    end = models.CharField(null=True,max_length=10)
-    result = models.CharField(max_length = 200,blank=True, null=True)
-    studid = models.IntegerField(blank=True,primary_key=True);
+class Stud(models.Model):
+    id = models.IntegerField(blank=True,primary_key=True)
+    name = models.CharField(max_length = 80)    # name of student
+    fname = models.CharField(max_length = 80)   # Familly name
+    klass = models.CharField(max_length = 8)    # Classe of the student
     
     
     class Meta:
         ordering = ['name']
-
         def __str__(self):
             return self.name
 
         
 
 class Test(models.Model):
-    M1 = models.IntegerField()
-    M2 = models.IntegerField()
-    M3 = models.IntegerField()
-    M4 = models.IntegerField()
+    id = models.IntegerField(blank=True,primary_key=True);
+    studid = models.ForeignKey(Stud,verbose_name='id',on_delete=models.SET_DEFAULT)
+    week = models.PositiveSmallIntegerField()  # Week of the test
+    date = models.DateField(null=True)         # Date of the test
+    start = models.DateField(null=True)        # Start of the test
+    tid =  models.FloatField(null=True)        # Time in minutes
+    correct = models.IntegerField(null=False)  # Correct answers
+    errors = models.IntegerField(null=False)   # Wrong answers
     
     class Meta:
-
+        ordering = ['week']
         def __str__(self):
-            return self.M1
+            return self.week

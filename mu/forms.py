@@ -1,13 +1,13 @@
 from django import forms,utils
 import time,datetime
-from .models import Student,Multi
+from .models import Stud,Multi,Test
 
 class StartForm(forms.ModelForm):
     name = forms.CharField(required=True,initial='',label='')
     password = forms.CharField(required=True,initial='',label='',widget=forms.PasswordInput)
 
     class Meta:
-        model = Student
+        model = Stud
         fields = ['name','password']
     
 class TeachForm(forms.ModelForm):
@@ -15,7 +15,7 @@ class TeachForm(forms.ModelForm):
     password = forms.CharField(required=True,initial='',label='',widget=forms.PasswordInput)
 
     class Meta:
-        model = Student
+        model = Stud
         fields = ['name','password']
 
 
@@ -63,7 +63,7 @@ class StudForm(forms.ModelForm):
     #studid.widget.attrs.update(disabled=True,required=False)
 
     class Meta:
-        model = Student
+        model = Stud
         fields = ['name','klass']
     
 
@@ -79,7 +79,7 @@ class ResForm(forms.ModelForm):
     date = forms.DateField(initial=datetime.date.today,label_suffix='',disabled=True,required=False)
     
     class Meta:
-        model = Student
+        model = Stud
         fields = ['name','klass','result']
     
         

@@ -24,8 +24,11 @@
 	  <td>{{ stud.name }} </td>
 	  <td>{{ stud.klass }}</td>
 	  <td>{{ stud.studid }}</td>
-	  <td>{{ stud.week }}</td>
-	  <td>{{ stud.result }}</td> 
+	  {% for test in tests %}
+	  <td>{{ test.week }}</td>
+	  <td>{{ test.correct }}</td>
+	  <td>{{ test.errors }}</td>
+	  {% endfor %}
 	</tr>
 	{% endfor %}
       </table>

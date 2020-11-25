@@ -1,23 +1,23 @@
 import sys,time,datetime
+from django.conf import settings
 from django.shortcuts import render,HttpResponse,HttpResponseRedirect,Http404
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
-from .models import Student,Multi
-from .forms import MuForm,ResForm,StudForm,StartForm,TeachForm
-from django.conf import settings
 from .encrypt import encrypt,decrypt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
+from .models import Stud,Multi,Test
+from .forms import MuForm,ResForm,StudForm,StartForm,TeachForm
+
 
 def LoginRequiredView(LoginRequiredMixin):
     
     return HttpResponseRedirect('/admin/login/?next=/admin/')
 
 def findstudid(name,klass):
-    print(klass.lower())
     
-    stud1 = Student.objects.filter(name=name,klass=klass.upper())
-    stud2 = Student.objects.filter(name=name,klass=klass.lower())
+    stud1 = Stud.objects.filter(name=name,klass=klass.upper())
+    stud2 = Stud.objects.filter(name=name,klass=klass.lower())
 
     
     #print('Number of students:', stud1.count())
@@ -38,12 +38,14 @@ def findstudid(name,klass):
 
 @login_required
 def TeachView(request):
-    studs = Student.objects.all()
+    studs = Stud.objects.all()
+    tests = Test.objects.all()
     teachform = TeachForm(request.POST)
     if (request.method == 'POST'):
         if (teachform.is_valid()):
             context={
-            'studs':studs
+                'studs':studs,
+                'tests':tests
             }
             
             return HttpResponseRedirect('/mu/teacher/',context)
@@ -54,7 +56,8 @@ def TeachView(request):
         form = TeachForm()
         context = {
             'form':form,
-            'studs':studs
+            'studs':studs,
+            'tests':tests
         }
         return render(request, 'teacher.html',context)
 
@@ -99,15 +102,15 @@ def StartView(request):
     
 def StudIn(request):
     # New stuff
-    fields = Student.objects.all()
+    fields = Stud.objects.all()
     
     if (request.method == 'POST'):
         studform = StudForm(request.POST)
         if (studform.is_valid()):
             name = studform.cleaned_data['name']
             klass = studform.cleaned_data['klass']
-            #password = studform.cleaned_data['password']
             studid = findstudid(name,klass)
+
             
             #print('spass:',spass)
             #studform.save()
@@ -144,19 +147,20 @@ def MuTest(request):
 
     fields = Multi.objects.all()
     studid = request.COOKIES['studid']
-    stud = Student.objects.filter(pk=studid)
+    stud = Stud.objects.filter(pk=studid)
+    testd = Test.objects.filter(pk=studid)
 
     name = stud[0].name
     klass = stud[0].klass
-    week = stud[0].week
+    week = testd[0].week
     
     print('Name: {}, Klass: {}, studid: {}\n'.format(name,klass,studid))
     if request.method == 'POST':
         muform = MuForm(request.POST)
-        #print('muform:',muform)
+
         if muform.is_valid():
             muform.save()
-            muform = MuForm() # Clear form to avoid student corrections
+            muform = MuForm() # Clear form to avoid student back corrections
             return HttpResponseRedirect('/mu/results/',{'form':muform,'stud':stud,'studid':studid})
         else:
             return HttpResponse('Form unvalid {}'.format(muform))
@@ -186,7 +190,7 @@ def MuTest(request):
         return render(request, 'MuForm.html', context)
 
 def StudView(request):
-    mus = Student.objects.all()
+    mus = Stud.objects.all()
 
     html = ''
     for mu in mus:
@@ -199,7 +203,7 @@ def ResView(request):
 
     res = Multi.objects.all()
     studid = request.COOKIES['studid']
-    stud = Student.objects.filter(pk=studid)
+    stud = Stud.objects.filter(pk=studid)
     # End timer
     b = datetime.datetime.now().replace(microsecond=0)
     
@@ -246,14 +250,10 @@ def ResView(request):
     html = html +'</br>' + allafel
 
     
-    # Update student results
-    oldres = stud[0].result
-    if (oldres != None):
-        newresult = oldres + ',({},{})'.format(cor,fel)
-    else:
-        newresult = '({},{})'.format(cor,fel)
+    # record results for student in mu_test
+    test[0].correct = cor
+    test[0].errors = fel
 
-    stud.update(result=newresult)
     time.tzset()
     tm = time.localtime()
     timeT = time.strftime('%H:%M:%S',tm)
@@ -261,18 +261,10 @@ def ResView(request):
     b = datetime.datetime.now().replace(microsecond=0)
 
     # Week number
-    a = datetime.datetime.strptime(stud[0].start, '%Y-%m-%d %H:%M:%S')
-    print(a)
+    a = datetime.datetime.strptime(test[0].start, '%Y-%m-%d %H:%M:%S')
     print(b-a)
-    oldate = stud[0].week
-    print(oldate)
-    if(oldate != None):
-        newdate = oldate + ',{}'.format(b.isocalendar()[1])
-    else:
-        newdate = '{}'.format(b.isocalendar()[1])
-        
-    stud.update(week=newdate)
-    stud.update(end=b-a)
+    test[0].week = b.isocalendar()[1]
+    test[0].tid = b-a
 
     return HttpResponse(html,status = 200)
 
