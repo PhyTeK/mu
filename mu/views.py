@@ -19,10 +19,6 @@ def findstudid(name,klass):
     stud1 = Stud.objects.filter(name=name,klass=klass.upper())
     stud2 = Stud.objects.filter(name=name,klass=klass.lower())
 
-    
-    #print('Number of students:', stud1.count())
-    #print('Number of students:', stud2.count())
-
     if(stud1.count() == 1):
         stud=stud1
     else:
@@ -101,7 +97,6 @@ def StartView(request):
 
     
 def StudIn(request):
-    # New stuff
     fields = Stud.objects.all()
     
     if (request.method == 'POST'):
@@ -175,10 +170,9 @@ def MuTest(request):
         timeT = time.strftime('%H:%M:%S',tm)
         dateT = time.strftime('20%y-%m-%d',tm)
         a = datetime.datetime.now().replace(microsecond=0)
-        print(a)
-        # Update start time of the student
 
-        stud.update(start=a,week=week)
+        # Update start time of the student
+        stud.update(start=a)
                                
         context ={
             'form':form,
