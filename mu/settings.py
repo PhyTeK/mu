@@ -31,7 +31,7 @@ if os.path.isfile(dotenv_file):
 SECRET_KEY = 'f557wk)rd8_2i!yhgwmyu!ucu2k8=ce0!(df43233%+g_3((-)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['localhost','127.0.0.1','mu120tab.herokuapp.com/','77.53.56.197']
 
@@ -91,11 +91,11 @@ WSGI_APPLICATION = 'mu.wsgi.application'
 #db_from_env = dj_database_url.config()
 #DATABASES['default']=dj_database_url.config(conn_max_age=600)
 
-DATABASES={    'default': {
-         'ENGINE': 'django.db.backends.sqlite3',
-         'NAME': BASE_DIR / 'db.sqlite3',
-     }
- }
+#DATABASES={  'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation
