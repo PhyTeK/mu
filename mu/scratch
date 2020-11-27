@@ -31,3 +31,40 @@
         </tr>
 	{% endfor %}
 	
+
+
+class Test(models.Model):
+    id = models.ForeignKey(Multi,to_field='id',blank=True, default=0,on_delete=models.SET_DEFAULT)
+    id = models.IntegerField(blank=True,primary_key=True);
+    studid = models.ForeignKey(Stud,to_field='id',blank=True, default=0,on_delete=models.SET_DEFAULT)
+
+    week = models.PositiveSmallIntegerField()  # Week of the test
+    date = models.DateField(null=True)         # Date of the test
+    start = models.DateField(null=True)        # Start of the test
+    tid =  models.FloatField(null=True)        # Time in minutes
+    correct = models.IntegerField(null=False)  # Correct answers
+    errors = models.IntegerField(null=False)   # Wrong answers
+
+    
+    class Meta:
+        ordering = ['week']
+        def __str__(self):
+            return self.week
+
+
+
+ # record results for student in mu_test
+    test[0].correct = cor
+    test[0].errors = fel
+
+    time.tzset()
+    tm = time.localtime()
+    timeT = time.strftime('%H:%M:%S',tm)
+    dateT = time.strftime('20%y-%m-%d',tm)
+    b = datetime.datetime.now().replace(microsecond=0)
+
+    # Week number
+    a = datetime.datetime.strptime(test[0].start, '%Y-%m-%d %H:%M:%S')
+    print(b-a)
+    #test[0].week = b.isocalendar()[1]
+    test[0].tid = b-a

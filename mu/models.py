@@ -6,7 +6,35 @@ from django.db import models
 #    duration_in_minutes = models.CharField(max_length = 200,null=True)
 #    state = models.IntegerField(blank=True,primary_key=True);
 
+class Stud(models.Model):
+    id = models.IntegerField(blank=True,primary_key=True)
+    name = models.CharField(max_length = 80)    # name of student
+    fname = models.CharField(max_length = 80)   # Familly name
+    klass = models.CharField(max_length = 8)    # Classe of the student
+    
+    
+    class Meta:
+        ordering = ['name']
+        def __str__(self):
+            return self.name
+
+
+
+
 class Multi(models.Model):
+    
+    id = models.AutoField(primary_key=True)
+    studid = models.ForeignKey(Stud, default=0, to_field="id", on_delete=models.SET_DEFAULT)
+    
+    week = models.PositiveSmallIntegerField(null=True)  # Week of the test
+    date = models.DateField(null=True)         # Date of the test
+    start = models.DateField(null=True)        # Start of the test
+    end   = models.DateField(null=True)        # End of the test
+    tid =  models.FloatField(null=True)        # Time in minutes
+    correct = models.IntegerField(null=False)  # Nb of Correct answers
+    errors = models.IntegerField(null=False)   # Nb of Wrong answers
+
+    
     #timer = Time.objects.create(
     #duration_in_minutes=5,
 
@@ -45,39 +73,10 @@ class Multi(models.Model):
         locals()[label] = models.CharField(blank=True, null=True,max_length=4,default='')
          
         del locals()['label']
+        
 
-    class Meta:
-
-        def __str__(self):
-            return self.test_120
 
     
-
-class Stud(models.Model):
-    id = models.IntegerField(blank=True,primary_key=True)
-    name = models.CharField(max_length = 80)    # name of student
-    fname = models.CharField(max_length = 80)   # Familly name
-    klass = models.CharField(max_length = 8)    # Classe of the student
-    
-    
-    class Meta:
-        ordering = ['name']
-        def __str__(self):
-            return self.name
 
         
 
-class Test(models.Model):
-    id = models.IntegerField(blank=True,primary_key=True);
-    studid = models.ForeignKey(Stud,verbose_name='id',on_delete=models.SET_DEFAULT)
-    week = models.PositiveSmallIntegerField()  # Week of the test
-    date = models.DateField(null=True)         # Date of the test
-    start = models.DateField(null=True)        # Start of the test
-    tid =  models.FloatField(null=True)        # Time in minutes
-    correct = models.IntegerField(null=False)  # Correct answers
-    errors = models.IntegerField(null=False)   # Wrong answers
-    
-    class Meta:
-        ordering = ['week']
-        def __str__(self):
-            return self.week

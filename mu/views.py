@@ -6,7 +6,7 @@ from .encrypt import encrypt,decrypt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from .models import Stud,Multi,Test
+from .models import Stud,Multi
 from .forms import MuForm,ResForm,StudForm,StartForm,TeachForm
 
 
@@ -143,36 +143,61 @@ def MuTest(request):
     fields = Multi.objects.all()
     studid = request.COOKIES['studid']
     stud = Stud.objects.filter(pk=studid)
-    testd = Test.objects.filter(pk=studid)
-
+    
+    
     name = stud[0].name
     klass = stud[0].klass
-    week = testd[0].week
+
+    date = datetime.datetime.now()
+    start = datetime.datetime.now().replace(microsecond=0)
+    week = 47
     
     print('Name: {}, Klass: {}, studid: {}\n'.format(name,klass,studid))
+
     if request.method == 'POST':
         muform = MuForm(request.POST)
 
         if muform.is_valid():
+            end = datetime.datetime.now().replace(microsecond=0)
+            tid = end - start
+
+            correct = 0
+            errors = 0
+            
+            for i in range(120):
+                mu = Multi.test_120[i]
+                muid = "{}: {}x{}".format(i+1,mu[0],mu[1])
+
+                #studres=lastval.values(muid)[0][muid]
+                studres = muform.cleaned_data[muid]
+
+                if(studres != None): 
+                    if (int(studres) == int(mu[0])*int(mu[1])):
+                        correct += 1
+                    else:
+                        errors += 1
+                else:
+                    errors +=1      # No answer = error
+
             muform.save()
+            
             muform = MuForm() # Clear form to avoid student back corrections
             return HttpResponseRedirect('/mu/results/',{'form':muform,'stud':stud,'studid':studid})
         else:
-            return HttpResponse('Form unvalid {}'.format(muform))
+            return HttpResponse('Form unvalid!')
          
     else:
         form = MuForm()
 
         # Start timer
-        time.tzset()
-        tm = time.localtime()
+        #time.tzset()
+        #tm = time.localtime()
 
-        timeT = time.strftime('%H:%M:%S',tm)
-        dateT = time.strftime('20%y-%m-%d',tm)
-        a = datetime.datetime.now().replace(microsecond=0)
+        #timeT = time.strftime('%H:%M:%S',tm)
+        #dateT = time.strftime('20%y-%m-%d',tm)
+        #a = datetime.datetime.now().replace(microsecond=0)
 
         # Update start time of the student
-        stud.update(start=a)
                                
         context ={
             'form':form,
@@ -195,39 +220,35 @@ def StudView(request):
 
 def ResView(request):
 
-    res = Multi.objects.all()
+    muls = Multi.objects.all()
     studid = request.COOKIES['studid']
+    # Get the ID of the student
     stud = Stud.objects.filter(pk=studid)
+    
     # End timer
     b = datetime.datetime.now().replace(microsecond=0)
     
     tm = time.localtime()
     timeT = time.strftime('%H:%M:%S',tm)
     
-    # Update end time of the student
-
-    stud.update(end=timeT)
-        
     name  = stud[0].name
     klass = stud[0].klass
 
     print('{}:{},{}\n'.format(studid,name,klass))
     
-    # Correct student multiplications
-    
+    # Correct the students multiplications
        
     html = ''
 
     cor = 0
     fel = 0
-    allafel = ''
-    lastid= res.count()
-    lastval = Multi.objects.filter(id=lastid)
-    #print('lastval', lastval.values('1: 6x6')[0]['1: 6x6'])
+
     for i in range(120):
         mu = Multi.test_120[i]
         muid = "{}: {}x{}".format(i+1,mu[0],mu[1])
+
         studres=lastval.values(muid)[0][muid] # Check that's the correct student
+
         if(studres != None):
             if (int(studres) == int(mu[0])*int(mu[1])):
                 print("{}: {}x{}={}".format(studid,mu[0],mu[1],studres))
@@ -235,40 +256,13 @@ def ResView(request):
             else:
                 print("!!{}: {}x{}={}".format(studid,mu[0],mu[1],studres))
                 fel += 1
-                allafel += '{}x{}≠{}'.format(mu[0],mu[1],studres) + '</br>'
 
-    #var = '<li> {} -> {} {}</li><br>'.format(m,mu[0],mu[1])
     var = '<p>Du hade, {} korrekta svar och {} fel.</p>'.format(cor,fel)
     html = html + var
 
     html = html +'</br>' + allafel
 
     
-    # record results for student in mu_test
-    test[0].correct = cor
-    test[0].errors = fel
-
-    time.tzset()
-    tm = time.localtime()
-    timeT = time.strftime('%H:%M:%S',tm)
-    dateT = time.strftime('20%y-%m-%d',tm)
-    b = datetime.datetime.now().replace(microsecond=0)
-
-    # Week number
-    a = datetime.datetime.strptime(test[0].start, '%Y-%m-%d %H:%M:%S')
-    print(b-a)
-    test[0].week = b.isocalendar()[1]
-    test[0].tid = b-a
-
     return HttpResponse(html,status = 200)
 
 
-#            for label in labels:
-#                locals()[label] = form.cleaned_data[locals()[label]]                
-
-#  try:
-#      name = MuModel.objects.get( stud_name = 'Philippe')
-#  except:
-#      raise Http404('No results %s %d' % (stud_name,locals()[1]))
-
-# return HttpResponseRedirect(f'/results/', {'mu':mu})

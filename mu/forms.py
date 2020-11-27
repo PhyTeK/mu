@@ -1,6 +1,6 @@
 from django import forms,utils
 import time,datetime
-from .models import Stud,Multi,Test
+from .models import Stud,Multi
 
 class StartForm(forms.ModelForm):
     name = forms.CharField(required=True,initial='',label='')
@@ -80,6 +80,6 @@ class ResForm(forms.ModelForm):
     
     class Meta:
         model = Stud
-        fields = ['name','klass','result']
+        fields = ['name','klass']
     
         
