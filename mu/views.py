@@ -16,7 +16,6 @@ def LoginRequiredView(LoginRequiredMixin):
     return HttpResponseRedirect('/admin/login/?next=/admin/')
 
 def findstudid(name,klass):
-    
     stud1 = Stud.objects.filter(name=name,klass=klass.upper())
     stud2 = Stud.objects.filter(name=name,klass=klass.lower())
 
@@ -123,10 +122,11 @@ def StudIn(request):
                     'name':name
                 }
 
-
+                #start = datetime.datetime.now().strftime('%H:%M:%S')
+                start = datetime.datetime.now().strftime("%H:%M:%S")
                 response = HttpResponseRedirect('/mu/test/',context)
-                response.set_cookie('studid',studid)
-
+                response.set_cookie('studid',studid,max_age=600)
+                response.set_cookie('start',start,max_age=600)
                 return response
         else:
             return HttpResponse('Form unvalid {}'.format(studform))
@@ -147,9 +147,10 @@ def MuTest(request):
     name = stud[0].name
     klass = stud[0].klass
 
-    date = str(datetime.datetime.now().strftime('20%y-%m-%d'))
-    start = str(datetime.datetime.now().strftime('%H:%M:%S'))
-
+    date = datetime.datetime.now().strftime('20%y-%m-%d')
+    start = request.COOKIES['start']
+    start = datetime.datetime.strptime(start,"%H:%M:%S")
+    
     week = int(datetime.datetime.now().isocalendar()[1])
 
 
@@ -159,16 +160,25 @@ def MuTest(request):
         muform = MuForm(request.POST)
 
         if muform.is_valid():
-            end = str(datetime.datetime.now().strftime('%H:%M:%S'))
+            end = datetime.datetime.now().strftime("%H:%M;%S")
+            #end = datetime.datetime.now()
+            start = start.strftime("%H:%M;%S")
             print('start:',start)
             print('end: ',end)
-            t2 = time.time()
-            dt = t2 -t1
-            print('t1=',t1)
-            print('t2=',t2)
-            minutes = int(dt/60)
-            seconds = int(dt - minutes*60)
+            #seconds = (end-start).seconds
+            #print(seconds)
+            seconds = 72
+            #end = end.strftime('%H:%M:%S')
+
+            # t2 = time.time()
+            # dt = t2 -t1
+            # print('t1=',t1)
+            # print('t2=',t2)
+            minutes = int(seconds/60)
+            seconds = int(seconds - minutes*60 )
             tid = "{}:{}".format(minutes,seconds)
+
+            
             test = Multi(studid_id=studid,date=date,start=start,end=end,week=week,tid=tid)    
                         
             correct = 0
