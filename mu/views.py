@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from .models import Stud,Multi
 from .forms import MuForm,ResForm,StudForm,StartForm,TeachForm
 
+t1 = time.time()
 
 def LoginRequiredView(LoginRequiredMixin):
     
@@ -98,7 +99,7 @@ def StartView(request):
     
 def StudIn(request):
     fields = Stud.objects.all()
-    
+    print('t1',t1)
     if (request.method == 'POST'):
         studform = StudForm(request.POST)
         if (studform.is_valid()):
@@ -139,47 +140,60 @@ def StudIn(request):
         return render(request, 'StudForm.html',context)
 
 def MuTest(request):
-
-    fields = Multi.objects.all()
+    
+    #fields = Multi.objects.all()
     studid = request.COOKIES['studid']
-    stud = Stud.objects.filter(pk=studid)
-    
-    
+    stud = Stud.objects.filter(studid=studid)
     name = stud[0].name
     klass = stud[0].klass
 
-    date = datetime.datetime.now()
-    start = datetime.datetime.now().replace(microsecond=0)
-    week = 47
-    
+    date = str(datetime.datetime.now().strftime('20%y-%m-%d'))
+    start = str(datetime.datetime.now().strftime('%H:%M:%S'))
+
+    week = int(datetime.datetime.now().isocalendar()[1])
+
+
     print('Name: {}, Klass: {}, studid: {}\n'.format(name,klass,studid))
 
     if request.method == 'POST':
         muform = MuForm(request.POST)
 
         if muform.is_valid():
-            end = datetime.datetime.now().replace(microsecond=0)
-            tid = end - start
-
+            end = str(datetime.datetime.now().strftime('%H:%M:%S'))
+            print('start:',start)
+            print('end: ',end)
+            t2 = time.time()
+            dt = t2 -t1
+            print('t1=',t1)
+            print('t2=',t2)
+            minutes = int(dt/60)
+            seconds = int(dt - minutes*60)
+            tid = "{}:{}".format(minutes,seconds)
+            test = Multi(studid_id=studid,date=date,start=start,end=end,week=week,tid=tid)    
+                        
             correct = 0
             errors = 0
             
             for i in range(120):
                 mu = Multi.test_120[i]
                 muid = "{}: {}x{}".format(i+1,mu[0],mu[1])
-
-                #studres=lastval.values(muid)[0][muid]
                 studres = muform.cleaned_data[muid]
 
                 if(studres != None): 
                     if (int(studres) == int(mu[0])*int(mu[1])):
                         correct += 1
+                        setattr(test,muid,studres)
                     else:
                         errors += 1
+                        setattr(test,muid,'!{}'.format(studres))
                 else:
-                    errors +=1      # No answer = error
-
-            muform.save()
+                    #errors +=1      # No answer = error
+                    #setattr(test,muid,'?')
+                    pass
+                    
+            test.__dict__.update(correct=correct,errors=errors)
+            test.save()
+            #muform.save()
             
             muform = MuForm() # Clear form to avoid student back corrections
             return HttpResponseRedirect('/mu/results/',{'form':muform,'stud':stud,'studid':studid})
@@ -198,13 +212,15 @@ def MuTest(request):
         #a = datetime.datetime.now().replace(microsecond=0)
 
         # Update start time of the student
-                               
+        #t1 = time.time()
+        print('t1_view: ',t1)
         context ={
             'form':form,
             'stud':stud,
             'name': name,
             'klass':klass,
-            'studid':studid
+            'studid':studid,
+            't1':t1
         }
         return render(request, 'MuForm.html', context)
 
@@ -239,28 +255,12 @@ def ResView(request):
     # Correct the students multiplications
        
     html = ''
-
-    cor = 0
-    fel = 0
-
-    for i in range(120):
-        mu = Multi.test_120[i]
-        muid = "{}: {}x{}".format(i+1,mu[0],mu[1])
-
-        studres=lastval.values(muid)[0][muid] # Check that's the correct student
-
-        if(studres != None):
-            if (int(studres) == int(mu[0])*int(mu[1])):
-                print("{}: {}x{}={}".format(studid,mu[0],mu[1],studres))
-                cor += 1
-            else:
-                print("!!{}: {}x{}={}".format(studid,mu[0],mu[1],studres))
-                fel += 1
-
+    cor=0
+    fel=99
     var = '<p>Du hade, {} korrekta svar och {} fel.</p>'.format(cor,fel)
     html = html + var
 
-    html = html +'</br>' + allafel
+    html = html +'</br>'
 
     
     return HttpResponse(html,status = 200)

@@ -68,3 +68,22 @@ class Test(models.Model):
     print(b-a)
     #test[0].week = b.isocalendar()[1]
     test[0].tid = b-a
+
+
+
+    cor = 0
+    fel = 0
+
+    for i in range(120):
+        mu = Multi.test_120[i]
+        muid = "{}: {}x{}".format(i+1,mu[0],mu[1])
+
+        studres=lastval.values(muid)[0][muid] # Check that's the correct student
+
+        if(studres != None):
+            if (int(studres) == int(mu[0])*int(mu[1])):
+                print("{}: {}x{}={}".format(studid,mu[0],mu[1],studres))
+                cor += 1
+            else:
+                print("!!{}: {}x{}={}".format(studid,mu[0],mu[1],studres))
+                fel += 1

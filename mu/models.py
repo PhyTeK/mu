@@ -7,32 +7,34 @@ from django.db import models
 #    state = models.IntegerField(blank=True,primary_key=True);
 
 class Stud(models.Model):
-    id = models.IntegerField(blank=True,primary_key=True)
+    studid = models.IntegerField(blank=True,primary_key=True)
     name = models.CharField(max_length = 80)    # name of student
-    fname = models.CharField(max_length = 80)   # Familly name
+    fname = models.CharField(max_length = 80,null=True)   # Familly name
     klass = models.CharField(max_length = 8)    # Classe of the student
     
     
     class Meta:
+        #app_label = "mu_stud"
+        #managed = True
         ordering = ['name']
         def __str__(self):
             return self.name
 
 
 
-
 class Multi(models.Model):
     
-    id = models.AutoField(primary_key=True)
-    studid = models.ForeignKey(Stud, default=0, to_field="id", on_delete=models.SET_DEFAULT)
-    
+    testid = models.AutoField(primary_key=True)
+    #studid = models.ForeignKey(Stud, default=0, to_field="stuid", on_delete=models.SET_DEFAULT)
+    studid = models.ForeignKey(Stud, on_delete=models.CASCADE)
+    #studid = models.IntegerField(default=0)
     week = models.PositiveSmallIntegerField(null=True)  # Week of the test
-    date = models.DateField(null=True)         # Date of the test
-    start = models.DateField(null=True)        # Start of the test
-    end   = models.DateField(null=True)        # End of the test
-    tid =  models.FloatField(null=True)        # Time in minutes
-    correct = models.IntegerField(null=False)  # Nb of Correct answers
-    errors = models.IntegerField(null=False)   # Nb of Wrong answers
+    date = models.CharField(max_length=80,null=True)    # Date of the test
+    start = models.CharField(max_length=80,null=True)   # Start of the test
+    end   = models.CharField(max_length=80,null=True)   # End of the test
+    tid =  models.CharField(max_length=80,null=True)        #  Time in minutes
+    correct = models.IntegerField(null=True)  # Nb of Correct answers
+    errors = models.IntegerField(null=True)   # Nb of Wrong answers
 
     
     #timer = Time.objects.create(
@@ -70,13 +72,16 @@ class Multi(models.Model):
     for m in test_120:
         i = i + 1
         label = '{}: {}x{}'.format(i,m[0],m[1])
+        #print(label)
         locals()[label] = models.CharField(blank=True, null=True,max_length=4,default='')
          
         del locals()['label']
         
 
-
-    
-
-        
+        class Meta:
+            #app_label = "mu_multi"
+            #managed = True
+            ordering = ['testid']
+            def __str__(self):
+                return self.testid
 

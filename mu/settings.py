@@ -93,16 +93,19 @@ WSGI_APPLICATION = 'mu.wsgi.application'
 #db_from_env = dj_database_url.config()
 #DATABASES['default']=dj_database_url.config(conn_max_age=600)
 
-#DATABASES={  'default': {
+# Use this in developement
+# DATABASES = {  'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
 
+
+# In production use postgresql
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'mudb',
+        'NAME': "mu.db",
         'USER': 'phimar',
         'PASSWORD': 'Pas2pdtc',
         'HOST': 'localhost',

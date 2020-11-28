@@ -32,7 +32,7 @@ class MuForm(forms.ModelForm):
         locals()[fname].widget.attrs.update(size='5',max_length=3)
 
         del locals()[fname]
-        
+
         
     class Meta:
         model = Multi
@@ -76,7 +76,7 @@ class ResForm(forms.ModelForm):
     tid = time.localtime()
     name = forms.CharField(label_suffix='',required=False)
     time = forms.CharField(disabled=True,required=False,label_suffix='', initial='{}:{}'.format(tid.tm_hour+1,tid.tm_min))
-    date = forms.DateField(initial=datetime.date.today,label_suffix='',disabled=True,required=False)
+    #date = forms.DateField(initial=datetime.date.today,label_suffix='',disabled=True,required=False)
     
     class Meta:
         model = Stud
