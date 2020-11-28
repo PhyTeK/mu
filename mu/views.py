@@ -34,6 +34,7 @@ def findstudid(name,klass):
 
 @login_required
 def TeachView(request):
+    mults = Multi.objects.all()
     studs = Stud.objects.all()
     tests = Test.objects.all()
     teachform = TeachForm(request.POST)
@@ -160,20 +161,26 @@ def MuTest(request):
         muform = MuForm(request.POST)
 
         if muform.is_valid():
-            end = datetime.datetime.now().strftime("%H:%M;%S")
-            #end = datetime.datetime.now()
-            start = start.strftime("%H:%M;%S")
+            # We need year 1900 fr both start and end times
+            end = datetime.datetime.now()
+            end = end.strftime("%H:%M:%S")
+            end = datetime.datetime.strptime(end,"%H:%M:%S")
+            
             print('start:',start)
             print('end: ',end)
-            #seconds = (end-start).seconds
-            #print(seconds)
-            seconds = 72
+            seconds = (end-start).seconds
+            print(seconds)
+
+            end = end.strftime("%H:%M:%S")
+            start = start.strftime("%H:%M:%S")
+            
             #end = end.strftime('%H:%M:%S')
 
             # t2 = time.time()
             # dt = t2 -t1
             # print('t1=',t1)
             # print('t2=',t2)
+
             minutes = int(seconds/60)
             seconds = int(seconds - minutes*60 )
             tid = "{}:{}".format(minutes,seconds)
@@ -183,6 +190,8 @@ def MuTest(request):
                         
             correct = 0
             errors = 0
+            ers = []
+            
             
             for i in range(120):
                 mu = Multi.test_120[i]
@@ -196,6 +205,7 @@ def MuTest(request):
                     else:
                         errors += 1
                         setattr(test,muid,'!{}'.format(studres))
+                        ers.append( "{} x {} ≠ {}".format(mu[0],mu[1],studres))
                 else:
                     #errors +=1      # No answer = error
                     #setattr(test,muid,'?')
@@ -206,7 +216,21 @@ def MuTest(request):
             #muform.save()
             
             muform = MuForm() # Clear form to avoid student back corrections
-            return HttpResponseRedirect('/mu/results/',{'form':muform,'stud':stud,'studid':studid})
+            print(ers)
+            context = {
+                'form':muform,
+                'stud':stud,
+                'name':name,
+                'klass':klass,
+                'minutes':minutes,
+                'seconds':seconds,
+                'correct':correct,
+                'errors':errors,
+                'ers':ers
+                        
+            }
+            #return HttpResponseRedirect('/mu/results/',context)
+            return render(request, 'ResForm.html',context)
         else:
             return HttpResponse('Form unvalid!')
          
@@ -230,7 +254,6 @@ def MuTest(request):
             'name': name,
             'klass':klass,
             'studid':studid,
-            't1':t1
         }
         return render(request, 'MuForm.html', context)
 
@@ -246,33 +269,10 @@ def StudView(request):
 
 def ResView(request):
 
-    muls = Multi.objects.all()
-    studid = request.COOKIES['studid']
-    # Get the ID of the student
-    stud = Stud.objects.filter(pk=studid)
-    
-    # End timer
-    b = datetime.datetime.now().replace(microsecond=0)
-    
-    tm = time.localtime()
-    timeT = time.strftime('%H:%M:%S',tm)
-    
-    name  = stud[0].name
-    klass = stud[0].klass
 
-    print('{}:{},{}\n'.format(studid,name,klass))
+    print('{},{},{}\n'.format(name,klass,res))
+
+    html=''
     
-    # Correct the students multiplications
-       
-    html = ''
-    cor=0
-    fel=99
-    var = '<p>Du hade, {} korrekta svar och {} fel.</p>'.format(cor,fel)
-    html = html + var
-
-    html = html +'</br>'
-
-    
-    return HttpResponse(html,status = 200)
-
+    return HttpResponseRedirect()
 
