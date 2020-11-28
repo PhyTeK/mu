@@ -36,8 +36,8 @@ def findstudid(name,klass):
 def TeachView(request):
     mults = Multi.objects.all()
     studs = Stud.objects.all()
-    tests = Test.objects.all()
     teachform = TeachForm(request.POST)
+
     if (request.method == 'POST'):
         if (teachform.is_valid()):
             context={
