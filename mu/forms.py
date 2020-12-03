@@ -14,7 +14,7 @@ class StartForm(forms.ModelForm):
     
 class TeachForm(forms.ModelForm):
 
-    WEEKS = [('47','47'),('48','48')]
+    WEEKS = [('47','47'),('48','48'),('49','49'),('50','50')]
     #name = forms.CharField(required=True,initial='hi',label='name')
     klasser = forms.ChoiceField(label='Klass',choices = Results.CLASSES,widget=forms.Select)
     weeks = forms.ChoiceField(label='Vecka',choices = WEEKS,widget=forms.Select)

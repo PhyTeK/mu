@@ -35,7 +35,7 @@ def findstudid(name,klass):
 
 
 
-#@login_required
+@login_required
 def TeachView(request):
     mults = Multi.objects.all()
     studs = Stud.objects.all()
@@ -45,47 +45,24 @@ def TeachView(request):
     # Find the best result for all student in a given class
     
     if (request.method == 'POST'):
-        form = TeachForm(request.POST)
-
-        print('Hi POST!')
-        if (form.is_valid()):
-            klasser = form.cleaned_data['klasser']
-            week2 = form.cleaned_data['weeks']
-
-            #form.save()
-
-
-        
-            context={
-                'form':form,
-                'studs':studs,
-                'tests':mults,
-                'klasser':klasser,
-                'week':week2,
-                'elever':elever
-            }
-
-
-            return HttpResponseRedirect('/mu/teacher/',context)
-        else:
-            return HttpResponse('Form unvalid!\n{}'.format(form))
+        print("method is POST!?")
+        return HttpResponseRedirect('/mu/teacher/',context)
 
     elif (request.method == 'GET'):
         form = TeachForm(request.GET)
         dicGet = request.GET
         try:
-            klasser=dicGet['klasser']
+            klasser = dicGet['klasser']
             week = dicGet['weeks']
         except:
-            klasser='1a'
-            week=47
+            klasser = '??'
+            week = 00
             
-
         elever = studs.filter(klass=klasser)
         
         tester = mults.filter(studid=elever[0].studid,week=week)
         for e in elever:
-            tmp=tester.union(mults.filter(studid=e.studid,week=week),all=False)
+            tmp = tester.union(mults.filter(studid=e.studid,week=week),all=False)
             
         tester = tmp
                 
@@ -146,7 +123,7 @@ def StudIn(request):
         if (studform.is_valid()):
 
             name = studform.cleaned_data['name']
-            klass = studform.cleaned_data['klass']
+            klass = studform.cleaned_data['klass'].lower()
             studid = findstudid(name,klass)
 
 
