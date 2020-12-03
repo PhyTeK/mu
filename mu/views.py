@@ -6,8 +6,9 @@ from .encrypt import encrypt,decrypt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from .models import Stud,Multi
+from .models import Stud,Multi,Results
 from .forms import MuForm,ResForm,StudForm,StartForm,TeachForm
+from django.views.decorators.csrf import csrf_exempt
 
 t1 = time.time()
 
@@ -32,35 +33,74 @@ def findstudid(name,klass):
     else:
         return None
 
-@login_required
+
+
+#@login_required
 def TeachView(request):
     mults = Multi.objects.all()
     studs = Stud.objects.all()
-    teachform = TeachForm(request.POST)
+    results = Results.objects.all()
+    # Find all students in a given class for a given test
 
+    # Find the best result for all student in a given class
+    
     if (request.method == 'POST'):
-        if (teachform.is_valid()):
+        form = TeachForm(request.POST)
+
+        print('Hi POST!')
+        if (form.is_valid()):
+            klasser = form.cleaned_data['klasser']
+            week2 = form.cleaned_data['weeks']
+
+            #form.save()
+
+
+        
             context={
+                'form':form,
                 'studs':studs,
-                'tests':tests
+                'tests':mults,
+                'klasser':klasser,
+                'week':week2,
+                'elever':elever
             }
-            
+
+
             return HttpResponseRedirect('/mu/teacher/',context)
         else:
-            return HttpResponse('Form unvalid!')
+            return HttpResponse('Form unvalid!\n{}'.format(form))
 
     elif (request.method == 'GET'):
-        form = TeachForm()
+        form = TeachForm(request.GET)
+        dicGet = request.GET
+        try:
+            klasser=dicGet['klasser']
+            week = dicGet['weeks']
+        except:
+            klasser='1a'
+            week=47
+            
+
+        elever = studs.filter(klass=klasser)
+        
+        tester = mults.filter(studid=elever[0].studid,week=week)
+        for e in elever:
+            tmp=tester.union(mults.filter(studid=e.studid,week=week),all=False)
+            
+        tester = tmp
+                
         context = {
             'form':form,
             'studs':studs,
-            'tests':tests
+            'tests':tester,
+            'week':week,
+            'klasser':klasser,
+            'elever':elever,
         }
-        return render(request, 'teacher.html',context)
+
+        return render(request,'teacher.html',context)
 
     
-
-
 def StartView(request):
 
     if (request.method == 'POST'):
@@ -96,18 +136,20 @@ def StartView(request):
 
 
 
-    
+#@csrf_exempt
 def StudIn(request):
     fields = Stud.objects.all()
-    print('t1',t1)
+
     if (request.method == 'POST'):
         studform = StudForm(request.POST)
+        
         if (studform.is_valid()):
+
             name = studform.cleaned_data['name']
             klass = studform.cleaned_data['klass']
             studid = findstudid(name,klass)
 
-            
+
             #print('spass:',spass)
             #studform.save()
             # Find the name in db and return the corresponing studid
@@ -147,7 +189,6 @@ def MuTest(request):
     stud = Stud.objects.filter(studid=studid)
     name = stud[0].name
     klass = stud[0].klass
-
     date = datetime.datetime.now().strftime('20%y-%m-%d')
     start = request.COOKIES['start']
     start = datetime.datetime.strptime(start,"%H:%M:%S")
@@ -216,7 +257,7 @@ def MuTest(request):
             #muform.save()
             
             muform = MuForm() # Clear form to avoid student back corrections
-            print(ers)
+            
             context = {
                 'form':muform,
                 'stud':stud,

@@ -6,6 +6,8 @@ from django.db import models
 #    duration_in_minutes = models.CharField(max_length = 200,null=True)
 #    state = models.IntegerField(blank=True,primary_key=True);
 
+
+
 class Stud(models.Model):
     studid = models.IntegerField(blank=True,primary_key=True)
     name = models.CharField(max_length = 80)    # name of student
@@ -17,6 +19,7 @@ class Stud(models.Model):
         #app_label = "mu_stud"
         #managed = True
         ordering = ['name']
+
         def __str__(self):
             return self.name
 
@@ -28,7 +31,7 @@ class Multi(models.Model):
     #studid = models.ForeignKey(Stud, default=0, to_field="stuid", on_delete=models.SET_DEFAULT)
     studid = models.ForeignKey(Stud, on_delete=models.CASCADE)
     #studid = models.IntegerField(default=0)
-    week = models.PositiveSmallIntegerField(null=True)  # Week of the test
+    week = models.PositiveSmallIntegerField(null=True,default=45)  # Week of the test
     date = models.CharField(max_length=80,null=True)    # Date of the test
     start = models.CharField(max_length=80,null=True)   # Start of the test
     end   = models.CharField(max_length=80,null=True)   # End of the test
@@ -85,3 +88,25 @@ class Multi(models.Model):
             def __str__(self):
                 return self.testid
 
+
+
+class Results(models.Model):
+        CLASSES = [
+            ("1a","1a"),
+            ("2a","2a"),
+            ("3a","3a"),
+            ("4a","4a"),
+            ("5a","5a"),
+            ("9b","9b")
+        ]
+
+        name = models.CharField(max_length=20,default='Me')
+        klasser = models.CharField(max_length=2,
+                                   choices=CLASSES,
+                                   default=("1a","1a"))
+        class Meta:
+        
+            ordering = ['name','klasser']
+
+            def __str__(self):
+                return self.klasser

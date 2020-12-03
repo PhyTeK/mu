@@ -13,17 +13,18 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import django_heroku
 import os
 import dj_database_url
-import dotenv
+#import dotenv
 from pathlib import Path
 import psycopg2.extensions
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-dotenv_file= os.path.join(BASE_DIR, '.env')
+#BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+print('BASE_DIR=',BASE_DIR)
+#dotenv_file= os.path.join(BASE_DIR, '.env')
 
-if os.path.isfile(dotenv_file):
-    dotenv.load_dotenv(dotenv_file)
+#if os.path.isfile(dotenv_file):
+#    dotenv.load_dotenv(dotenv_file)
 
 
 # Quick-start development settings - unsuitable for production
@@ -38,9 +39,10 @@ DEBUG = True
 ALLOWED_HOSTS = ['localhost','127.0.0.1','mu120tab.herokuapp.com/','77.53.56.197']
 
 SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_SAMESITE = True
+SESSION_COOKIE_SAMESITE = 'None' # Solved the problem with 'bool' lower() issue
 CSRF_COOKIE_SECURE = True
 #CSRF_COOKIE_DOMAIN = None   # In development
+#CSRF_COOKIE_HTTPONLY = True
 
 # Application definition
 
@@ -151,6 +153,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 #STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(os.path.dirname(BASE_DIR), "static", "static")
+]
 ENCRYPT_KEY = b'nLSOyfzWTyEPvkkkKIK5n1jXc2N1IwkV0RvfMTXWbC0='
 # Configure Django App for Heroku.
 

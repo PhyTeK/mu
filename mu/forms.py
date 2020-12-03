@@ -1,6 +1,6 @@
 from django import forms,utils
 import time,datetime
-from .models import Stud,Multi
+from .models import Stud,Multi,Results
 
 class StartForm(forms.ModelForm):
     name = forms.CharField(required=True,initial='',label='')
@@ -9,14 +9,19 @@ class StartForm(forms.ModelForm):
     class Meta:
         model = Stud
         fields = ['name','password']
+
+        
     
 class TeachForm(forms.ModelForm):
-    name = forms.CharField(required=True,initial='',label='')
-    password = forms.CharField(required=True,initial='',label='',widget=forms.PasswordInput)
+
+    WEEKS = [('47','47'),('48','48')]
+    #name = forms.CharField(required=True,initial='hi',label='name')
+    klasser = forms.ChoiceField(label='Klass',choices = Results.CLASSES,widget=forms.Select)
+    weeks = forms.ChoiceField(label='Vecka',choices = WEEKS,widget=forms.Select)
 
     class Meta:
-        model = Stud
-        fields = ['name','password']
+        model = Results
+        fields = ['klasser']
 
 
 
@@ -77,9 +82,21 @@ class ResForm(forms.ModelForm):
     name = forms.CharField(label_suffix='',required=False)
     time = forms.CharField(disabled=True,required=False,label_suffix='', initial='{}:{}'.format(tid.tm_hour+1,tid.tm_min))
     #date = forms.DateField(initial=datetime.date.today,label_suffix='',disabled=True,required=False)
-    
+
+    # iterable 
+    KLASS_CHOICES =( 
+        ("1", "One"), 
+        ("2", "Two"), 
+        ("3", "Three"), 
+        ("4", "Four"), 
+        ("5", "Five"), 
+    )
+
+    klass_field = forms.ChoiceField(choices = KLASS_CHOICES)
+
     class Meta:
         model = Stud
         fields = ['name','klass']
     
         
+  

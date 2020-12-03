@@ -79,6 +79,7 @@ class Test(models.Model):
         muid = "{}: {}x{}".format(i+1,mu[0],mu[1])
 
         studres=lastval.values(muid)[0][muid] # Check that's the correct student
+        
 
         if(studres != None):
             if (int(studres) == int(mu[0])*int(mu[1])):
@@ -96,3 +97,22 @@ class Test(models.Model):
     {% endif %}
     {% endfor %}
     {% endwith %}
+
+
+
+    # Two forms
+    
+     <form method='POST'>
+    {{form1.as_p}}
+    <button type="submit" name="btnform1">Save Changes</button>
+    </form>
+    <form method='POST'>
+    {{form2.as_p}}
+    <button type="submit" name="btnform2">Save Changes</button>
+    </form>
+
+
+    if request.method=='POST' and 'btnform1' in request.POST:
+    do something...
+    if request.method=='POST' and 'btnform2' in request.POST:
+    do something...
